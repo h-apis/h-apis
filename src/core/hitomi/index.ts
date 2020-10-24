@@ -1,6 +1,6 @@
 import bypassAxios from "../../common/bypassAxios";
 import cheerio from 'cheerio';
-import Element = cheerio.Element;
+import { merge } from 'lodash';
 
 /*
  * 메인페이지의 <div class="gallery-content"/> 에 데이터블록을 태우는 순서
@@ -37,29 +37,40 @@ import Element = cheerio.Element;
  *
  */
 
-const textMapper = (_: number, element: Element) => element.firstChild.data;
+const textMapper = (_: number, element: cheerio.Element) => element.firstChild.data;
 
 /**
  * [workaround] 이 부분은 사이트의 구조에 굉장히 민감한 코드로, 쉽게 바뀔 수 있다.
- * @param html
  */
-function parseGalleryBlock(html: string) {
+function parseGalleryBlock(galleryNumber: number, html: string) {
     const $ = cheerio.load(html);
     const mainDiv = $('div:nth-child(1)');
     const thumbDiv = mainDiv.find('.dj-img-cont');
     const artistsDiv = mainDiv.find('.artist-list');
     const contentsDiv = mainDiv.find('.dj-content table');
 
+    //TODO characters
     const type = contentsDiv.find('td:contains("Type")').parent().find('a').first().text();
     const language = contentsDiv.find('td:contains("Language")').parent().find('a').first().text();
     const title = mainDiv.find('h1 a').attr('title')
-    const href = mainDiv.find('a:nth-child(1)').attr('href');
-    const thumbnailImage = thumbDiv.find('.dj-img1 img').attr('src');
+    const href = `https://hitomi.la{mainDiv.find('a:nth-child(1)').attr('href')}`;
+    const thumbnail = `https:${thumbDiv.find('.dj-img1 img').attr('src')}`;
     const artists = artistsDiv.find('li a').map(textMapper).toArray()
     const series = contentsDiv.find('td:contains("Series")').parent().find('td:nth-child(2)').find('li a').map(textMapper).toArray();
     const tags = contentsDiv.find('.relatedtags li a').map(textMapper).toArray();
 
-    return {tags, language, title, artists, type, href, thumbnailImage, series};
+    return {
+        galleryNumber, tags, language, title, artists, type, series,
+        urls: {
+            href,
+            reader: `https://hitomi.la/reader/${galleryNumber}.html`,
+            thumbnail,
+        }
+    };
+}
+
+async function getImageListFromReader() {
+
 }
 
 export async function getList() {
@@ -81,5 +92,17 @@ export async function getList() {
 export async function getGalleryMetaData(galleryNumber: number = 644511) {
     const url = `https://ltn.hitomi.la/galleryblock/${galleryNumber}.html`;
     const result = await bypassAxios.get<string>(url);
-    return parseGalleryBlock(result.data);
+    return parseGalleryBlock(galleryNumber, result.data);
+}
+
+/**
+ * 히토미에서 직접 내려준 데이터 정리값. 그러나 reader phase 에서 사용하고 있기 때문에,
+ * 시리즈 및 캐릭터등의 인덱스에서 보여주는 정보를 가지고있지 않다.
+ * 하지만 구조상 히토미에서 직접 제공해주는 데이터기 때문에 속도는 훨씬 빠르다. (파싱이 없기 때문)
+ * @param galleryNumber
+ */
+export async function getGalleryMetaDataFromHitomi(galleryNumber: number = 644511) {
+    const url = `https://ltn.hitomi.la/galleries/${galleryNumber}.js`;
+    const {data} = await bypassAxios.get<string>(url);
+    return JSON.parse(data.replace('var galleryinfo = ', ''));;
 }
