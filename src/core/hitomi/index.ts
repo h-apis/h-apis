@@ -1,5 +1,6 @@
 import bypassAxios from "../../common/bypassAxios";
 import cheerio from 'cheerio';
+import Element = cheerio.Element;
 
 /*
  * 메인페이지의 <div class="gallery-content"/> 에 데이터블록을 태우는 순서
@@ -36,6 +37,8 @@ import cheerio from 'cheerio';
  *
  */
 
+const textMapper = (_: number, element: Element) => element.firstChild.data;
+
 /**
  * [workaround] 이 부분은 사이트의 구조에 굉장히 민감한 코드로, 쉽게 바뀔 수 있다.
  * @param html
@@ -44,13 +47,19 @@ function parseGalleryBlock(html: string) {
     const $ = cheerio.load(html);
     const mainDiv = $('div:nth-child(1)');
     const thumbDiv = mainDiv.find('.dj-img-cont');
+    const artistsDiv = mainDiv.find('.artist-list');
+    const contentsDiv = mainDiv.find('.dj-content table');
 
-
-    const type = mainDiv.attr('class');
+    const type = contentsDiv.find('td:contains("Type")').parent().find('a').first().text();
+    const language = contentsDiv.find('td:contains("Language")').parent().find('a').first().text();
+    const title = mainDiv.find('h1 a').attr('title')
     const href = mainDiv.find('a:nth-child(1)').attr('href');
     const thumbnailImage = thumbDiv.find('.dj-img1 img').attr('src');
+    const artists = artistsDiv.find('li a').map(textMapper).toArray()
+    const series = contentsDiv.find('td:contains("Series")').parent().find('td:nth-child(2)').find('li a').map(textMapper).toArray();
+    const tags = contentsDiv.find('.relatedtags li a').map(textMapper).toArray();
 
-    return {type, href, thumbnailImage};
+    return {tags, language, title, artists, type, href, thumbnailImage, series};
 }
 
 export async function getList() {
