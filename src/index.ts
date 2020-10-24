@@ -1,3 +1,5 @@
-export const hello = function () {
-    console.log('Hello World');
-}
+import ax from './common/bypassAxios';
+
+export default {
+    sex: ax,
+};
