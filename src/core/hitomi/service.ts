@@ -1,7 +1,7 @@
 import bypassAxios from "../../common/bypassAxios";
 import cheerio from 'cheerio';
-import fs from 'fs';
-import getImageUrl from './common';
+import fse from 'fs-extra';
+import getImageUrl from './common.js';
 
 /*
  * 메인페이지의 <div class="gallery-content"/> 에 데이터블록을 태우는 순서
@@ -123,16 +123,22 @@ export async function getImageUrlList(galleryNumber: number = 644511) {
  * 이미지 CDN 서브도메인은 referer check 를 한다.
  * 그렇지 않으면 403 에러를 내기 때문에 약간의 조작을 요한다.
  */
-export async function getImageData(url: string) {
+export async function downloadImage(url: string, filePath: string) {
     const {data} = await bypassAxios.get(url, {
-        responseType: 'arraybuffer',
+        responseType: 'stream',
         headers: {
             referer: 'https://hitomi.la/'
         }
     });
-    return data;
+
+    return new Promise((resolve, reject) => {
+        const writeStream = fse.createWriteStream(filePath);
+        data.pipe(writeStream);
+        writeStream.on('finish', resolve);
+        writeStream.on('error', reject);
+    });
 }
 
 export function downloadImageData(data: any) {
-    fs.writeFileSync('./image.jpg', data, 'binary')
+    fse.writeFileSync('./image.jpg', data, 'binary')
 }

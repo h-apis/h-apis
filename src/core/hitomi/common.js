@@ -14,8 +14,6 @@
  * @param galleryNumber
  */
 
-"use strict";
-
 var loading_timer;
 var domain = 'ltn' + '.hitomi.la';
 var galleryblockextension = '.html';

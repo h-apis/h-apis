@@ -1,4 +1,4 @@
-import * as hitomi from './index';
+import * as hitomi from './service';
 import {assert} from 'chai';
 
 describe('hitomi', () => {
@@ -25,10 +25,14 @@ describe('hitomi', () => {
         assert.isNotEmpty(result);
     });
 
-    it('getImageData', async function () {
+    it('downloadImage', async function () {
         this.timeout(50000);
         const dummyUrl = 'https://ab.hitomi.la/images/0/72/1923b3e2d6e5b904617ad54a9140c5017d1014910967b62d99bc98d0488eb720.jpg';
-        const result = await hitomi.getImageData(dummyUrl);
-        assert.exists(result)
+        try {
+            await hitomi.downloadImage(dummyUrl, './image.jpg');
+            assert.ok('downloaded')
+        } catch (e) {
+            assert.fail(e)
+        }
     })
 })

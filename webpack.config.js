@@ -13,7 +13,7 @@ module.exports = {
     mode: CURRENT_NODE_ENV,
     devtool: 'inline-source-map',
     target: 'node',
-    entry: './src/index.ts',
+    entry: './src/service.ts',
     output: {
         path: path.resolve(__dirname, 'lib'),
         filename: 'index.bundle.js',
