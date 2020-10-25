@@ -5,8 +5,8 @@
   "main": "lib/index.bundle.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "cli": "ts-node src/executor/command/index.ts",
-    "web": "ts-node src/executor/web/index.ts",
+    "cli": "ts-node executor/command/index.ts",
+    "web": "ts-node executor/web/index.ts",
     "test": "mocha -r ts-node/register -P ./tsconfig.json ./src/**/*.spec.ts",
     "type": "tsc --project tsconfig.typing.json"
   },

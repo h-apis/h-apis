@@ -1,9 +1,9 @@
 import express from 'express';
-import HitomiCore from '../../core/hitomi'
+import HitomiCore from '../../src/core/hitomi'
 import path from 'path';
 
 const app = express();
-const hitomiCore = new HitomiCore(path.join(__dirname, '..', '..', '..', 'hitomi'));
+const hitomiCore = new HitomiCore(path.join(__dirname, '..', 'hitomi'));
 const PORT = 3000;
 
 app.use('/public', express.static(path.join(__dirname, 'public')));

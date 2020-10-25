@@ -1,8 +1,8 @@
-import HitomiCore from '../../core/hitomi';
+import HitomiCore from '../../src/core/hitomi';
 import path from 'path';
 import inquirer, {Question} from 'inquirer';
 
-const hitomiCore = new HitomiCore(path.join(__dirname, '..', '..', '..', 'hitomi'));
+const hitomiCore = new HitomiCore(path.join(__dirname, '..', 'hitomi'));
 
 const galleryNumberQuestion: Question = {
     name: 'galleryNumber',
