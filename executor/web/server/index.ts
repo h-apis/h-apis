@@ -1,14 +1,17 @@
 import express from 'express';
-import HitomiCore from '../../src/core/hitomi'
+import HitomiCore from '../../../src/core/hitomi'
 import path from 'path';
 
-const app = express();
-const hitomiCore = new HitomiCore(path.join(__dirname, '..', 'hitomi'));
+const PUBLIC_PATH = path.join(__dirname, '..', 'public');
+const HITOMI_TARGET_PATH = path.join(__dirname, '..', '..', '..', 'hitomi');
 const PORT = 3000;
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
+const app = express();
+const hitomiCore = new HitomiCore(HITOMI_TARGET_PATH);
+
+app.use('/public', express.static(PUBLIC_PATH));
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(PUBLIC_PATH, 'index.html'));
 });
 app.get('/download', async (req, res) => {
     try {
