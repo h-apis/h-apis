@@ -70,8 +70,5 @@
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
     "emitDeclarationOnly": true,
     "outFile": "./lib/index.d.ts"
-  },
-  "files": [
-    "types/index.d.ts", "src/index.ts"
-  ]
+  }
 }
