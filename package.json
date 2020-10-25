@@ -5,7 +5,7 @@
   "main": "lib/index.bundle.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "mocha -r ts-node/register ./src/**/*.spec.ts",
+    "test": "mocha -r ts-node/register -P ./tsconfig.json ./src/**/*.spec.ts",
     "type": "tsc --project tsconfig.typing.json"
   },
   "keywords": [],

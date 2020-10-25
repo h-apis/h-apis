@@ -1,6 +1,7 @@
 import bypassAxios from "../../common/bypassAxios";
 import cheerio from 'cheerio';
-import { merge } from 'lodash';
+import fs from 'fs';
+import getImageUrl from './common';
 
 /*
  * 메인페이지의 <div class="gallery-content"/> 에 데이터블록을 태우는 순서
@@ -69,10 +70,6 @@ function parseGalleryBlock(galleryNumber: number, html: string) {
     };
 }
 
-async function getImageListFromReader() {
-
-}
-
 export async function getList() {
     const result = await bypassAxios.get<Buffer>('https://ltn.hitomi.la/index-all.nozomi', {
         responseType: 'arraybuffer',
@@ -104,5 +101,38 @@ export async function getGalleryMetaData(galleryNumber: number = 644511) {
 export async function getGalleryMetaDataFromHitomi(galleryNumber: number = 644511) {
     const url = `https://ltn.hitomi.la/galleries/${galleryNumber}.js`;
     const {data} = await bypassAxios.get<string>(url);
-    return JSON.parse(data.replace('var galleryinfo = ', ''));;
+    return JSON.parse(data.replace('var galleryinfo = ', ''));
+}
+
+/**
+ * 리더에서 발생하는 이미지 가져오기 로직을 그대로 사용한다.
+ * common.js 에서..
+ * url_from_url_from_hash -> url_from_url -> subdomain_from_url -> subdomain_from_galleryid
+ * @param galleryNumber
+ */
+export async function getImageUrlList(galleryNumber: number = 644511) {
+    const {files = []} = await getGalleryMetaDataFromHitomi(galleryNumber);
+
+    return files.map((file: any) => {
+        Object.assign(file, {haswebp: 0, hasavif: 0});
+        return getImageUrl(galleryNumber, file);
+    });
+}
+
+/**
+ * 이미지 CDN 서브도메인은 referer check 를 한다.
+ * 그렇지 않으면 403 에러를 내기 때문에 약간의 조작을 요한다.
+ */
+export async function getImageData(url: string) {
+    const {data} = await bypassAxios.get(url, {
+        responseType: 'arraybuffer',
+        headers: {
+            referer: 'https://hitomi.la/'
+        }
+    });
+    return data;
+}
+
+export function downloadImageData(data: any) {
+    fs.writeFileSync('./image.jpg', data, 'binary')
 }
