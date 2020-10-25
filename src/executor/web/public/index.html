@@ -1,0 +1,36 @@
+<html lang="ko">
+<head>
+    <title>H-APIS example page</title>
+</head>
+<body>
+<div>
+    <label for="galleryNumber">갤번입력 :</label>
+    <input id="galleryNumber"/>
+</div>
+<button id="submit">전송</button>
+<div id="status-span"></div>
+
+<script src="/public/vender/jquery-3.5.1.min.js"></script>
+<script>
+    const galleryNumberElem = $('#galleryNumber');
+    const submitButton = $('#submit');
+    const statusSpan = $('#status-span');
+
+    submitButton.on('click', () => {
+        const inputValue = galleryNumberElem.val();
+        statusSpan.text('다운로드중');
+        submitButton.attr('disabled', true)
+        $.ajax({
+            url: `/download?id=${inputValue}`,
+        }).done(() => {
+            alert('downloaded');
+        }).fail(() => {
+            alert('download failed');
+        }).always(() => {
+            submitButton.attr('disabled', false);
+            statusSpan.text('');
+        });
+    })
+</script>
+</body>
+</html>
