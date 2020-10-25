@@ -149,7 +149,7 @@ function retry(fn, retries, err) {
 ///////////////////////////////////////////////////////////////////////////
 /**
  *
- * @param galleryNumber{number}
+ * @param galleryNumber{number|string}
  * @param imageData{Object}
  */
 module.exports = function getImageUrl(galleryNumber, imageData) {

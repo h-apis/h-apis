@@ -19,12 +19,6 @@ describe('hitomi', () => {
         assert.isObject(result);
     });
 
-    it('getReaderCommonJSFile', async () => {
-        const result = await hitomi.getImageUrlList();
-        assert.isArray(result);
-        assert.isNotEmpty(result);
-    });
-
     it('downloadImage', async function () {
         this.timeout(50000);
         const dummyUrl = 'https://ab.hitomi.la/images/0/72/1923b3e2d6e5b904617ad54a9140c5017d1014910967b62d99bc98d0488eb720.jpg';
