@@ -1,6 +1,11 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 import Vue from 'vue';
-import App from './components/App.vue';
+import VuetifyApp from './components/App';
+import vuetify from './plugins/vuetify';
 
 new Vue({
-    render: h => h(App)
+    vuetify,
+    render: h => h(VuetifyApp)
 }).$mount('#app');

@@ -1,30 +1,49 @@
 <template>
-  <div>
-    <div>
-      <label for="galleryNumber">갤번입력</label>
-      <input id="galleryNumber" v-model="galleryNumberValue" type="number"/>
-    </div>
-    <div>
-      <button id="submit" @click="handleSubmit" :disabled="isDownloading">전송</button>
-      <div>{{statusText}}</div>
-    </div>
-  </div>
+  <v-app id="inspire">
+    <v-navigation-drawer
+        v-model="drawer"
+        app
+    >
+      작업예정
+    </v-navigation-drawer>
+
+    <v-app-bar app>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Application</v-toolbar-title>
+    </v-app-bar>
+
+    <v-main>
+      <v-container>
+        <v-layout
+            style="width: 20%"
+        >
+          <v-text-field
+              v-model="galleryNumberValue"
+              color="success"
+              label="갤번입력"
+              :loading="isDownloading"
+              :disabled="isDownloading"
+          />
+        </v-layout>
+
+        <v-btn elevation="2" @click="handleSubmit" :disabled="isDownloading">다운로드</v-btn>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
-  name: 'app',
   data: () => ({
-    galleryNumberValue: 644511,
+    drawer: null,
     isDownloading: false,
-    statusText: '',
+    galleryNumberValue: 644511
   }),
   methods: {
-    handleSubmit: async function(e) {
+    handleSubmit: async function() {
       try {
-        this.statusText = '다운로드중';
         this.isDownloading = true;
         await axios.get(`/download?id=${this.galleryNumberValue}`);
         alert('downloaded');
@@ -32,7 +51,6 @@ export default {
         console.error(e);
         alert('download failed');
       } finally {
-        this.statusText = '';
         this.isDownloading = false;
       }
     }
