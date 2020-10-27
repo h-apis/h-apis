@@ -1,4 +1,4 @@
-import HitomiCore from '../../src/core/hitomi';
+import HitomiCore from '../../server/core/hitomi';
 import path from 'path';
 import inquirer, {Question} from 'inquirer';
 
