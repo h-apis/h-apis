@@ -26,6 +26,10 @@ app.get('/download', async (req, res) => {
     } catch (e) {
         res.status(500).send('앙 에러띠');
     }
+});
+
+app.get('/get', (req, res) => {
+    res.json(hitomiCore.getDownloadedData());
 })
 
 
