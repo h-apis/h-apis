@@ -12,7 +12,12 @@ class HitomiCore {
 
     constructor(directory: string) {
         this.directory = directory;
-        this.dao = new HitomiDataManager();
+
+        const dbFilePath = path.join(directory, 'hitomi.db');
+        this.dao = new HitomiDataManager(dbFilePath);
+
+        // NOTE 적절한 위치를 찾지 못함. 동시성 처리에 문제가 있을 수 있음.
+        this.synchronizeWithDirectory();
     }
 
     async download(galleryNumber: number) {
@@ -35,6 +40,15 @@ class HitomiCore {
 
     getDownloadedData() {
         return this.dao.getAll();
+    }
+
+    /**
+     * 디렉토리 내에 있는 실제 작품들과 데이터베이스 내에 있는 리스트가 일치하는지 확인한다.
+     * 데이터베이스에는 있지만 실제 작품이 삭제되거나 이동되어서 없는 경우는 데이터베이스에서 데이터를 삭제한다.
+     */
+    async synchronizeWithDirectory(): Promise<string[]> {
+        const directoryList = await fse.readdir(this.directory);
+        return await this.dao.refreshByDirectoryTitle(directoryList);
     }
 
     /**

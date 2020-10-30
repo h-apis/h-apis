@@ -16,6 +16,12 @@ describe('hitomi core', function () {
         }
     });
 
+    it('read directoryList', async function () {
+        const deletedList = await hitomiCore.synchronizeWithDirectory();
+        assert.isArray(deletedList);
+        assert.isEmpty(deletedList); // virtus 하나 추가, [virtus] - [virtus] = []
+    });
+
     after(() => {
         fse.removeSync(dummyTargetDirectory);
     });

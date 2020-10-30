@@ -11,7 +11,7 @@
     "web:dev": "concurrently \"npm run web:dev:front\" \"npm run web:dev:back\"",
     "web:dev:front": "webpack --watch --config webpack/client.base.config.js",
     "web:dev:back": "ts-node-dev ./server",
-    "test": "mocha -r ts-node/register -P ./tsconfig.json ./src/**/*.spec.ts",
+    "test": "mocha -r ts-node/register -P ./tsconfig.json ./server/**/*.spec.ts",
     "type": "tsc --project tsconfig.typing.json"
   },
   "keywords": [],
