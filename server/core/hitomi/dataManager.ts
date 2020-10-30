@@ -5,6 +5,7 @@ type HitomiDTO = {
     title: string;
     rawTitle: string; // no escaped title
     galleryNumber: number;
+    thumbnailFileName?: string;
 }
 
 class HitomiDataManager {
@@ -20,15 +21,29 @@ class HitomiDataManager {
 
     }
 
-    insert(data: HitomiDTO) {
+    insert(newData: HitomiDTO) {
         return new Promise((resolve, reject) => {
-            this.db.insert(data, (err) => {
-                if (err) {
-                    reject(err);
+            this.db.findOne({
+                galleryNumber: newData.galleryNumber
+            }, (err, alreadyExistsData) => {
+                if (!alreadyExistsData) {
+                    this.db.insert(newData, (err) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
                 } else {
-                    resolve();
+                    this.db.update(alreadyExistsData, newData, undefined, (err) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
                 }
-            });
+            })
         });
     }
 
@@ -52,6 +67,18 @@ class HitomiDataManager {
 
     getAll() {
         return this.db.getAllData();
+    }
+
+    getOne(query: Partial<HitomiDTO>): Promise<HitomiDTO> {
+        return new Promise((resolve, reject) => {
+            this.db.findOne(query, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
     }
 }
 

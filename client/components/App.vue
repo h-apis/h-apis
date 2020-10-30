@@ -25,9 +25,9 @@
               :disabled="isDownloading"
           />
         </v-layout>
-
         <v-btn elevation="2" @click="handleSubmit" :disabled="isDownloading">다운로드</v-btn>
-        <v-layout>
+
+        <v-layout class="mt-4">
           <v-row dense>
             <v-col
                 v-for="item in downloadedList"
@@ -40,12 +40,23 @@
                   shaped
                   class="mx-auto"
               >
-                <v-card-title>
-                  {{item.rawTitle}}
-                </v-card-title>
-                <v-card-subtitle>
-                  {{item.galleryNumber}}
-                </v-card-subtitle>
+                <div class="d-flex flex-no-wrap">
+                  <v-avatar
+                      class="ma-3"
+                      size="150"
+                      tile
+                  >
+                    <v-img :src="`/${item.galleryNumber}/thumbnail`"></v-img>
+                  </v-avatar>
+                  <div>
+                    <v-card-title>
+                      {{item.rawTitle}}
+                    </v-card-title>
+                    <v-card-subtitle>
+                      {{item.galleryNumber}}
+                    </v-card-subtitle>
+                  </div>
+                </div>
               </v-card>
             </v-col>
           </v-row>

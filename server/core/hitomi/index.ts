@@ -15,9 +15,6 @@ class HitomiCore {
 
         const dbFilePath = path.join(directory, 'hitomi.db');
         this.dao = new HitomiDataManager(dbFilePath);
-
-        // NOTE 적절한 위치를 찾지 못함. 동시성 처리에 문제가 있을 수 있음.
-        this.synchronizeWithDirectory();
     }
 
     async download(galleryNumber: number) {
@@ -35,11 +32,23 @@ class HitomiCore {
             rawTitle: title,
             title: escapedTitle,
             galleryNumber: parseInt(id),
+            thumbnailFileName: files[0].name,
         });
     }
 
-    getDownloadedData() {
+    async getDownloadedData() {
+        // NOTE 적절한 위치를 찾지 못함. 동시성 처리에 문제가 있을 수 있음.
+        await this.synchronizeWithDirectory();
         return this.dao.getAll();
+    }
+
+    async getThumbnailImage(galleryNumber: number): Promise<string> {
+        const item = await this.dao.getOne({galleryNumber});
+        if (item?.thumbnailFileName) {
+            return path.join(this.directory, item.title, item.thumbnailFileName);
+        } else {
+            return '';
+        }
     }
 
     /**

@@ -28,9 +28,18 @@ app.get('/download', async (req, res) => {
     }
 });
 
-app.get('/get', (req, res) => {
-    res.json(hitomiCore.getDownloadedData());
-})
+app.get('/get', async (req, res) => {
+    res.json(await hitomiCore.getDownloadedData());
+});
+
+app.get('/:galleryNumber/thumbnail', async (req, res) => {
+    const {galleryNumber} = req.params;
+    if (galleryNumber) {
+        res.sendFile(await hitomiCore.getThumbnailImage(parseInt(galleryNumber)));
+    } else {
+        res.sendStatus(400).send('GalleryNumber Required');
+    }
+});
 
 
 app.listen(PORT, () => {

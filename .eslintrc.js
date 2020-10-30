@@ -7,21 +7,26 @@ module.exports = {
     extends: ['eslint:recommended'],
     parserOptions: {
         ecmaVersion: 12,
-        sourceType: 'module'
+        sourceType: 'module',
     },
     rules: {
-        quotes: ['warn', 'single']
+        quotes: ['warn', 'single'],
+        'comma-dangle': ['warn', {
+            arrays: 'never',
+            objects: 'always',
+            functions: 'always',
+        }],
     },
     overrides: [
         {
             files: ['.ts'],
             parser: '@typescript-eslint/parser',
             plugins: ['@typescript-eslint'],
-            extends: ['plugin:@typescript-eslint/recommended']
+            extends: ['plugin:@typescript-eslint/recommended'],
         },
         {
             files: ['.vue'],
-            extends: ['plugin:vue/essential',]
+            extends: ['plugin:vue/essential'],
         }
-    ]
+    ],
 };
