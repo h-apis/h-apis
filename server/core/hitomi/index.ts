@@ -6,6 +6,8 @@ import getImageUrlFromRaw from './functions/getImageUrlFromRaw';
 import downloadImage from './functions/downloadImage';
 import titleMapper from './mapper/titleMapper';
 import bypassAxios from '../../common/bypassAxios';
+import getListFromNozomi from './functions/getListFromNozomi';
+import getMetadataFromGallery from './functions/getMetadataFromGallery';
 
 /**
  * 갤번을 입력하면 파일을 다운로드해준다.
@@ -47,10 +49,24 @@ class HitomiCore {
         return this.dao.getAll();
     }
 
+    // TODO 페이지, 언어 등 인자 입력 가능해야함. 쿼리로 받는 것이 좋을 듯.
+    async fetchData() {
+        const idListInPage = await getListFromNozomi();
+        return await Promise.all(idListInPage.map(async (id) => {
+            let hitomiData;
+            hitomiData = await this.dao.getOne({id});
+            if (!hitomiData) {
+                hitomiData = await getMetadataFromGallery(id);
+                await this.dao.upsert(hitomiData);
+            }
+            return hitomiData;
+        }));
+    }
+
     async getThumbnailImage(id: number): Promise<ReadStream | undefined> {
         const item = await this.dao.getOne({id});
         const thumbnailFile = item?.thumbnail?.file;
-        const thumbnailImageUrl =  item?.thumbnail?.imageUrl;
+        const thumbnailImageUrl = item?.thumbnail?.imageUrl;
         if (thumbnailImageUrl) {
             const {data} = await bypassAxios.get(thumbnailImageUrl, {
                 responseType: 'stream',

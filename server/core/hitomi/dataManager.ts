@@ -18,27 +18,17 @@ class HitomiDataManager {
 
     upsert(newData: Partial<HitomiDTO>) {
         return new Promise((resolve, reject) => {
-            this.db.findOne({
+            this.db.update({
                 id: newData.id
-            }, (err, alreadyExistsData) => {
-                if (!alreadyExistsData) {
-                    this.db.insert(newData, (err) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve();
-                        }
-                    });
+            }, newData, {
+                upsert: true
+            }, (err) => {
+                if (err) {
+                    reject(err);
                 } else {
-                    this.db.update(alreadyExistsData, newData, undefined, (err) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve();
-                        }
-                    });
+                    resolve();
                 }
-            })
+            });
         });
     }
 

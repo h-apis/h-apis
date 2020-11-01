@@ -29,7 +29,7 @@ app.get('/download', async (req, res) => {
 });
 
 app.get('/get', async (req, res) => {
-    res.json(await hitomiCore.getDownloadedData());
+    res.json(await hitomiCore.fetchData());
 });
 
 app.get('/:galleryNumber/thumbnail', async (req, res) => {
@@ -38,6 +38,8 @@ app.get('/:galleryNumber/thumbnail', async (req, res) => {
     if (id) {
         const readStream = await hitomiCore.getThumbnailImage(id);
         if (readStream) {
+            // cache store on browser on 1 year
+            res.set('Cache-Control', 'public, max-age=31557600');
             readStream.pipe(res);
         } else {
             res.sendStatus(500).send('Server Error');
