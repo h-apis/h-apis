@@ -8,9 +8,9 @@ describe('hitomi core', function () {
     const hitomiCore = new HitomiCore(dummyTargetDirectory)
 
     it('download document', async function () {
-        this.timeout(30000);
+        this.timeout(60000);
         try {
-            await hitomiCore.download(644511);
+            await hitomiCore.download(1307325);
         } catch (e) {
             assert.fail(e);
         }

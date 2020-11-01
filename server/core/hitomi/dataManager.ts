@@ -9,14 +9,14 @@ type HitomiDTO = {
 }
 
 class HitomiDataManager {
-    private db: DataStore;
+    private db: DataStore<HitomiDTO>;
     private dbFilePath: string;
 
     constructor(dataPath: string) {
         this.dbFilePath = dataPath;
         this.db = new DataStore<HitomiDTO>({
             filename: dataPath,
-            autoload: true,
+            autoload: true
         });
 
     }

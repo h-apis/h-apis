@@ -1,7 +1,9 @@
-import * as hitomiService from './service';
 import fse from 'fs-extra';
 import path from 'path';
-import HitomiDataManager from "./dataManager";
+import HitomiDataManager from './dataManager';
+import getMetadataFromReader from './functions/getMetadataFromReader';
+import getImageUrlFromRaw from './functions/getImageUrlFromRaw';
+import downloadImage from './functions/downloadImage';
 
 /**
  * 갤번을 입력하면 파일을 다운로드해준다.
@@ -18,21 +20,21 @@ class HitomiCore {
     }
 
     async download(galleryNumber: number) {
-        const {title, files, id} = await hitomiService.getGalleryMetaDataFromHitomi(galleryNumber);
+        const {title, files, id} = await getMetadataFromReader(galleryNumber);
         const escapedTitle = HitomiCore.escapeForDirectory(title);
-        const imageUrlList = files.map((file) => hitomiService.getImageUrlFrom(galleryNumber, file));
+        const imageUrlList = files.map((file) => getImageUrlFromRaw(galleryNumber, file));
         const targetDirectory = path.join(this.directory, escapedTitle);
 
         await fse.ensureDir(targetDirectory);
         await Promise.all(imageUrlList.map((url, index) =>
-            hitomiService.downloadImage(url, path.join(targetDirectory, files[index].name))
+            downloadImage(url, path.join(targetDirectory, files[index].name))
         ));
 
         await this.dao.insert({
             rawTitle: title,
             title: escapedTitle,
             galleryNumber: parseInt(id),
-            thumbnailFileName: files[0].name,
+            thumbnailFileName: files[0].name
         });
     }
 
@@ -68,7 +70,7 @@ class HitomiCore {
     private static escapeForDirectory(target: string) {
         return target
             .replace(/[ ]/g, '_')
-            .replace(/[&\/\\#,+()$~%.'":*?<>{}|]/g, '+')
+            .replace(/[&/\\#,+()$~%.'":*?<>{}|]/g, '+')
     }
 }
 
