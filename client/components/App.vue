@@ -54,7 +54,20 @@
                     </v-card-title>
                     <v-card-subtitle>
                       {{item.id}}
+                      {{item.language}}
                     </v-card-subtitle>
+                    <v-card-text>
+                      <v-chip-group>
+                        <v-chip
+                            v-for="tag in item.tags"
+                            :color="tagChipColor(tag)"
+                            outlined
+                            pill
+                        >
+                          {{textizeTag(tag)}}
+                        </v-chip>
+                      </v-chip-group>
+                    </v-card-text>
                   </div>
                 </div>
               </v-card>
@@ -99,6 +112,14 @@ export default {
       } catch (e) {
         alert('fetch failed');
       }
+    },
+    textizeTag(tagData) {
+      const {type, name} = tagData;
+      return `${name} ${type === 'female' ? '♀' : type === 'male' ? '♂' : ''}`
+    },
+    tagChipColor(tagData) {
+      const {type} = tagData;
+      return type === 'female' ? 'orange' : type === 'male' ? 'blue' : '';
     }
   },
   created() {
