@@ -1,9 +1,11 @@
-import fse from 'fs-extra';
+import fse, {ReadStream} from 'fs-extra';
 import path from 'path';
 import HitomiDataManager from './dataManager';
 import getMetadataFromReader from './functions/getMetadataFromReader';
 import getImageUrlFromRaw from './functions/getImageUrlFromRaw';
 import downloadImage from './functions/downloadImage';
+import titleMapper from './mapper/titleMapper';
+import bypassAxios from '../../common/bypassAxios';
 
 /**
  * 갤번을 입력하면 파일을 다운로드해준다.
@@ -21,7 +23,7 @@ class HitomiCore {
 
     async download(galleryNumber: number) {
         const {title, files, id} = await getMetadataFromReader(galleryNumber);
-        const escapedTitle = HitomiCore.escapeForDirectory(title);
+        const escapedTitle = titleMapper.escapeTitle(title);
         const imageUrlList = files.map((file) => getImageUrlFromRaw(galleryNumber, file));
         const targetDirectory = path.join(this.directory, escapedTitle);
 
@@ -30,11 +32,12 @@ class HitomiCore {
             downloadImage(url, path.join(targetDirectory, files[index].name))
         ));
 
-        await this.dao.insert({
-            rawTitle: title,
-            title: escapedTitle,
-            galleryNumber: parseInt(id),
-            thumbnailFileName: files[0].name
+        await this.dao.upsert({
+            title,
+            id: parseInt(id),
+            thumbnail: {
+                file: files[0].name
+            }
         });
     }
 
@@ -44,12 +47,24 @@ class HitomiCore {
         return this.dao.getAll();
     }
 
-    async getThumbnailImage(galleryNumber: number): Promise<string> {
-        const item = await this.dao.getOne({galleryNumber});
-        if (item?.thumbnailFileName) {
-            return path.join(this.directory, item.title, item.thumbnailFileName);
+    async getThumbnailImage(id: number): Promise<ReadStream | undefined> {
+        const item = await this.dao.getOne({id});
+        const thumbnailFile = item?.thumbnail?.file;
+        const thumbnailImageUrl =  item?.thumbnail?.imageUrl;
+        if (thumbnailImageUrl) {
+            const {data} = await bypassAxios.get(thumbnailImageUrl, {
+                responseType: 'stream',
+                headers: {
+                    referer: 'https://hitomi.la/'
+                }
+            });
+            return data;
+        } else if (thumbnailFile) {
+            return fse.createReadStream(
+                path.join(this.directory, titleMapper.escapeTitle(item.title || ''), thumbnailFile)
+            );
         } else {
-            return '';
+            return undefined;
         }
     }
 
@@ -60,17 +75,6 @@ class HitomiCore {
     async synchronizeWithDirectory(): Promise<string[]> {
         const directoryList = await fse.readdir(this.directory);
         return await this.dao.refreshByDirectoryTitle(directoryList);
-    }
-
-    /**
-     * 디렉토리명에 특수문자가 들어갈 수 없으므로, 전부 + 처리한다.
-     * 추가로 공백은 _ 처리한다.
-     * @private
-     */
-    private static escapeForDirectory(target: string) {
-        return target
-            .replace(/[ ]/g, '_')
-            .replace(/[&/\\#,+()$~%.'":*?<>{}|]/g, '+')
     }
 }
 

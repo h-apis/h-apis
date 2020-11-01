@@ -34,8 +34,14 @@ app.get('/get', async (req, res) => {
 
 app.get('/:galleryNumber/thumbnail', async (req, res) => {
     const {galleryNumber} = req.params;
-    if (galleryNumber) {
-        res.sendFile(await hitomiCore.getThumbnailImage(parseInt(galleryNumber)));
+    const id = parseInt(galleryNumber);
+    if (id) {
+        const readStream = await hitomiCore.getThumbnailImage(id);
+        if (readStream) {
+            readStream.pipe(res);
+        } else {
+            res.sendStatus(500).send('Server Error');
+        }
     } else {
         res.sendStatus(400).send('GalleryNumber Required');
     }

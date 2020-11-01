@@ -30,3 +30,27 @@ export type HitomiReaderMetadata = {
     language_localname: string;
     files: HitomiReaderFile[]
 }
+
+export type HitomiDefaultData = {
+    id: number; // galleryNumber
+    title: string;
+    language: string; // reader 에서는 language_localname 으로
+    tags: HitomiTag[];
+    thumbnail: {
+        file?: string;
+        imageUrl?: string;
+    };
+    type: string;
+}
+
+export type HitomiReaderData = HitomiDefaultData & {
+    files: HitomiReaderFile[];
+    date: string;
+}
+
+export type HitomiGalleryData = HitomiDefaultData & {
+    artists: string[];
+    series: string[];
+}
+
+export type HitomiDTO = Partial<HitomiReaderData & HitomiGalleryData>;

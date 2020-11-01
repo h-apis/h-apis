@@ -1,12 +1,7 @@
 import DataStore from 'nedb';
 import {difference} from 'lodash';
-
-type HitomiDTO = {
-    title: string;
-    rawTitle: string; // no escaped title
-    galleryNumber: number;
-    thumbnailFileName?: string;
-}
+import {HitomiDTO} from './types';
+import titleMapper from './mapper/titleMapper';
 
 class HitomiDataManager {
     private db: DataStore<HitomiDTO>;
@@ -21,10 +16,10 @@ class HitomiDataManager {
 
     }
 
-    insert(newData: HitomiDTO) {
+    upsert(newData: Partial<HitomiDTO>) {
         return new Promise((resolve, reject) => {
             this.db.findOne({
-                galleryNumber: newData.galleryNumber
+                id: newData.id
             }, (err, alreadyExistsData) => {
                 if (!alreadyExistsData) {
                     this.db.insert(newData, (err) => {
@@ -48,7 +43,7 @@ class HitomiDataManager {
     }
 
     async refreshByDirectoryTitle(titleList: string[]) {
-        const dbExistsList = this.getAll().map((doc) => doc.title);
+        const dbExistsList = this.getAll().map((doc) => titleMapper.escapeTitle(doc.title));
         const dbExistButNoFilesTitleList = difference(dbExistsList, titleList);
 
         await Promise.all(dbExistButNoFilesTitleList.map((title) => new Promise((resolve, reject) => {

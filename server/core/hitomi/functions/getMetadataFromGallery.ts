@@ -1,28 +1,18 @@
 import {GALLERY_BLOCK_URL} from '../constants';
 import bypassAxios from '../../../common/bypassAxios';
 import cheerio from 'cheerio';
+import {compact} from 'lodash';
+import {HitomiGalleryData} from '../types';
+import tagMapper from '../mapper/tagMapper';
 
-type HitomiGalleryMetadata = {
-    galleryNumber: string;
-    tags: string[];
-    language: string;
-    title: string;
-    artists: string[];
-    type: string;
-    series: string[]
-    urls: {
-        href: string;
-        reader: string;
-        thumbnail: string;
-    }
-}
-
-const textMapper = (_: number, element: cheerio.Element) => element.firstChild.data;
+const textMapper = (element: cheerio.Element) => {
+    return element.firstChild.data;
+};
 
 /**
  * [workaround] 이 부분은 사이트의 구조에 굉장히 민감한 코드로, 쉽게 바뀔 수 있다.
  */
-function parseGalleryBlock(galleryNumber: number, html: string) {
+function parseGalleryBlock(galleryNumber: number, html: string): HitomiGalleryData {
     const $ = cheerio.load(html);
     const mainDiv = $('div:nth-child(1)');
     const thumbDiv = mainDiv.find('.dj-img-cont');
@@ -32,20 +22,28 @@ function parseGalleryBlock(galleryNumber: number, html: string) {
     //TODO characters
     const type = contentsDiv.find('td:contains("Type")').parent().find('a').first().text();
     const language = contentsDiv.find('td:contains("Language")').parent().find('a').first().text();
-    const title = mainDiv.find('h1 a').attr('title')
-    const href = `https://hitomi.la${mainDiv.find('a:nth-child(1)').attr('href')}`;
+    const title = mainDiv.find('h1 a').attr('title') || 'notitle';
     const thumbnail = `https:${thumbDiv.find('.dj-img1 img').attr('src')}`;
-    const artists = artistsDiv.find('li a').map(textMapper).toArray()
-    const series = contentsDiv.find('td:contains("Series")').parent().find('td:nth-child(2)').find('li a').map(textMapper).toArray();
-    const tags = contentsDiv.find('.relatedtags li a').map(textMapper).toArray();
+    const artists = compact(artistsDiv.find('li a').toArray().map(textMapper));
+    const series = compact(
+        contentsDiv
+            .find('td:contains("Series")').parent()
+            .find('td:nth-child(2)')
+            .find('li a').toArray().map(textMapper));
+    const tags =
+        compact(contentsDiv.find('.relatedtags li a').toArray().map(textMapper)).map(tagMapper.fromGallery);
 
     return {
-        galleryNumber, tags, language, title, artists, type, series,
-        urls: {
-            href,
-            reader: `https://hitomi.la/reader/${galleryNumber}.html`,
-            thumbnail
-        }
+        id: galleryNumber,
+        artists,
+        language,
+        type,
+        series,
+        tags,
+        thumbnail: {
+            imageUrl: thumbnail
+        },
+        title
     };
 }
 

@@ -31,7 +31,7 @@
           <v-row dense>
             <v-col
                 v-for="item in downloadedList"
-                :key="item.galleryNumber"
+                :key="item.id"
                 :cols="12"
             >
               <v-card
@@ -46,14 +46,14 @@
                       size="150"
                       tile
                   >
-                    <v-img :src="`/${item.galleryNumber}/thumbnail`"></v-img>
+                    <v-img :src="`/${item.id}/thumbnail`"></v-img>
                   </v-avatar>
                   <div>
                     <v-card-title>
-                      {{item.rawTitle}}
+                      {{item.title}}
                     </v-card-title>
                     <v-card-subtitle>
-                      {{item.galleryNumber}}
+                      {{item.id}}
                     </v-card-subtitle>
                   </div>
                 </div>
