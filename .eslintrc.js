@@ -20,7 +20,7 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
     overrides: [{
-        files: ['.vue'],
+        files: ['*.vue'],
         extends: ['plugin:vue/essential'],
     }],
     ignorePatterns: ['*.js'],

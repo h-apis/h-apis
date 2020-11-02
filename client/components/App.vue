@@ -34,43 +34,7 @@
                 :key="item.id"
                 :cols="12"
             >
-              <v-card
-                  elevation="2"
-                  outlined
-                  shaped
-                  class="mx-auto"
-              >
-                <div class="d-flex flex-no-wrap">
-                  <v-avatar
-                      class="ma-3"
-                      size="150"
-                      tile
-                  >
-                    <v-img :src="`/${item.id}/thumbnail`"></v-img>
-                  </v-avatar>
-                  <div>
-                    <v-card-title>
-                      {{item.title}}
-                    </v-card-title>
-                    <v-card-subtitle>
-                      {{item.id}}
-                      {{item.language}}
-                    </v-card-subtitle>
-                    <v-card-text>
-                      <v-chip-group>
-                        <v-chip
-                            v-for="tag in item.tags"
-                            :color="tagChipColor(tag)"
-                            outlined
-                            pill
-                        >
-                          {{textizeTag(tag)}}
-                        </v-chip>
-                      </v-chip-group>
-                    </v-card-text>
-                  </div>
-                </div>
-              </v-card>
+              <HitomiDataCard :data="item" />
             </v-col>
           </v-row>
 
@@ -82,13 +46,15 @@
 
 <script>
 import axios from 'axios';
+import HitomiDataCard from './HitomiDataCard';
 
 export default {
+  components: { HitomiDataCard },
   data: () => ({
     drawer: null,
     isDownloading: false,
     galleryNumberValue: 644511,
-    downloadedList: [],
+    downloadedList: []
   }),
   methods: {
     handleSubmit: async function() {
