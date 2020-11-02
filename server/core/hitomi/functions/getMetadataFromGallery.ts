@@ -24,7 +24,7 @@ function parseGalleryBlock(galleryNumber: number, html: string): HitomiGalleryDa
     const language = contentsDiv.find('td:contains("Language")').parent().find('a').first().text();
     const titleElement = mainDiv.find('h1 a');
     const title = titleElement.attr('title') || titleElement.first().text() || 'notitle';
-    const thumbnail = `https:${thumbDiv.find('.dj-img1 img').attr('src')}`;
+    const thumbnail = `https:${thumbDiv.find('div[class*="-img1"] img').attr('src')}`;
     const artists = compact(artistsDiv.find('li a').toArray().map(textMapper));
     const series = compact(
         contentsDiv
