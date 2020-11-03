@@ -22,13 +22,16 @@
           {{data.language}}
         </v-card-subtitle>
         <v-card-text>
-          <v-chip-group>
+          <v-chip-group
+              :column="true"
+              max="0"
+          >
             <v-chip
                 v-for="tag in data.tags"
-                :key="tag.name"
+                :key="`${tag.name}_${tag.type}`"
                 :color="tagChipColor(tag)"
                 outlined
-                pill
+                small
             >
               {{textizeTag(tag)}}
             </v-chip>

@@ -36,7 +36,7 @@ class HitomiCore {
 
         await this.dao.upsert({
             title,
-            id: parseInt(id),
+            id,
             thumbnail: {
                 file: files[0].name
             }
@@ -56,11 +56,17 @@ class HitomiCore {
             let hitomiData;
             hitomiData = await this.dao.getOne({id});
             if (!hitomiData) {
-                hitomiData = await getMetadataFromGallery(id);
-                await this.dao.upsert(hitomiData);
+                hitomiData = await this.inquiryDataFrom(id);
             }
             return hitomiData;
         }));
+    }
+
+    async inquiryDataFrom(id: number) {
+        const hitomiData = await getMetadataFromGallery(id);
+        await this.dao.upsert(hitomiData);
+
+        return hitomiData;
     }
 
     async getThumbnailImage(id: number): Promise<ReadStream | undefined> {

@@ -1,6 +1,7 @@
-import {HitomiReaderMetadata} from '../types';
+import {HitomiReaderData, HitomiReaderMetadata, HitomiReaderTag} from '../types';
 import {GALLERY_URL} from '../constants';
 import bypassAxios from '../../../common/bypassAxios';
+import tagMapper from '../mapper/tagMapper';
 
 /**
  * 히토미에서 직접 내려준 데이터 정리값. 그러나 reader phase 에서 사용하고 있기 때문에,
@@ -8,7 +9,7 @@ import bypassAxios from '../../../common/bypassAxios';
  * 하지만 구조상 히토미에서 직접 제공해주는 데이터기 때문에 속도는 훨씬 빠르다. (파싱이 없기 때문)
  * @param galleryNumber
  */
-export default async function getMetadataFromReader(galleryNumber = 644511): Promise<HitomiReaderMetadata> {
+export default async function getMetadataFromReader(galleryNumber = 644511): Promise<HitomiReaderData> {
     const url = `${GALLERY_URL}/${galleryNumber}.js`;
     const {data} = await bypassAxios.get<string>(url);
     const resultObject = JSON.parse(data.replace('var galleryinfo = ', '')) as HitomiReaderMetadata;
@@ -18,5 +19,21 @@ export default async function getMetadataFromReader(galleryNumber = 644511): Pro
         Object.assign(file, {haswebp: 0, hasavif: 0});
     });
 
-    return resultObject;
+    return Object.entries(resultObject).reduce<Partial<HitomiReaderData>>((result, [key, value]) => {
+        if (['language', 'japanese_title'].indexOf(key) > -1) {
+            return result;
+        }
+
+        if (key === 'language_localname') {
+            result.language = value as string;
+        }
+
+        if (key === 'tags') {
+            result.tags = (value as HitomiReaderTag[]).map(tagMapper.fromReader);
+        }
+
+        //@ts-ignore
+        result[key] = value;
+        return result;
+    }, {}) as HitomiReaderData;
 }

@@ -28,6 +28,29 @@ app.get('/download', async (req, res) => {
     }
 });
 
+app.get('/inquiry', async (req, res) => {
+    try {
+        const {id} = req.query;
+        const galleryNumber = parseInt(id as string);
+        if (!galleryNumber) {
+            return res.status(400).send('parameter insufficient');
+        }
+        res.json(await hitomiCore.inquiryDataFrom(galleryNumber));
+    } catch (e) {
+        if (e?.response?.status) {
+            const status = e.response.status;
+            if (status === 404) {
+                res.status(200).json(undefined);
+            } else {
+                res.sendStatus(e.response.status);
+            }
+        } else {
+            console.error(e);
+            res.sendStatus(500);
+        }
+    }
+});
+
 app.get('/get', async (req, res) => {
     res.json(await hitomiCore.fetchData());
 });
