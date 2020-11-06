@@ -27,7 +27,7 @@
                   :loading="isLoading"
                   :disabled="isLoading"
               />
-            </v-col >
+            </v-col>
             <v-col
                 sm="6"
                 md="4"

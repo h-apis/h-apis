@@ -18,6 +18,7 @@ module.exports = {
         quotes: ['warn', 'single'],
         'comma-dangle': 'warn',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/ban-ts-comment': 'warn',
     },
     overrides: [{
         files: ['*.vue'],
