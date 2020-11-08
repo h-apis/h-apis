@@ -15,45 +15,21 @@
     <v-main>
       <v-container>
         <SearchLayout/>
-        <v-layout class="mt-4">
-          <v-row>
-            <v-col
-                v-for="item in dataList"
-                :key="item.id"
-                :cols="12"
-            >
-              <HitomiDataCard :data="item"/>
-            </v-col>
-          </v-row>
-        </v-layout>
+        <DataListLayout/>
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import axios from 'axios';
-import HitomiDataCard from './components/HitomiDataCard';
 import SearchLayout from './layouts/SearchLayout';
+import DataListLayout from './layouts/DataListLayout';
 
 export default {
-  components: { SearchLayout, HitomiDataCard },
+  components: { DataListLayout, SearchLayout },
   data: () => ({
     drawer: null,
     dataList: []
-  }),
-  methods: {
-    refreshDownloadedDataList: async function () {
-      try {
-        const { data } = await axios.get('/get');
-        this.dataList = data;
-      } catch (e) {
-        alert('fetch failed');
-      }
-    }
-  },
-  created() {
-    this.refreshDownloadedDataList();
-  }
+  })
 }
 </script>

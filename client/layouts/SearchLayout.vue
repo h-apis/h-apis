@@ -78,8 +78,7 @@ export default {
         alert('download failed');
       } finally {
         this.isLoading = false;
-        // noinspection ES6MissingAwait
-        this.refreshDownloadedDataList();
+        //TODO 로컬데이터 신규 fetch -> merge
       }
     }
   }

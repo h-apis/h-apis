@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex, { createLogger } from 'vuex';
-import sweet from './modules/sweet';
+import browse from './modules/browse';
 
 Vue.use(Vuex);
 
@@ -8,7 +8,7 @@ const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
     modules: {
-        sweet,
+        browse,
     },
     strict: debug,
     plugins: debug ? [createLogger()] : [],
