@@ -1,11 +1,23 @@
 import bypassAxios from '../../../common/bypassAxios';
-import {LTN_URL} from '../constants';
+import {BYTE, FETCH_DATA_COUNT, LTN_URL} from '../constants';
 
-export default async function getListFromNozomi() {
-    const result = await bypassAxios.get<Buffer>(`${LTN_URL}/index-all.nozomi`, {
+export type HitomiFetchQuery = Partial<{
+    page: number;
+    language: string;
+    type: string;
+}>
+
+export default async function getListFromNozomi(query: HitomiFetchQuery) {
+    const {page = 1, language = 'all'} = query;
+
+    const startByte = (page - 1) * FETCH_DATA_COUNT * BYTE;
+    const endByte = (page * FETCH_DATA_COUNT * BYTE) - 1;
+
+    const result = await bypassAxios.get<Buffer>(`${LTN_URL}/index-${language}.nozomi`, {
+        params: {page},
         responseType: 'arraybuffer',
         headers: {
-            'Range': 'bytes=0-99'
+            'Range': `bytes=${startByte}-${endByte}`
         }
     });
 

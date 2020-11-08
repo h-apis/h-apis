@@ -1,6 +1,7 @@
 import express from 'express';
 import HitomiCore from './core/hitomi'
 import path from 'path';
+import {FETCH_DATA_COUNT} from './core/hitomi/constants';
 
 const PUBLIC_PATH = path.join(__dirname, '..', 'public');
 const HITOMI_TARGET_PATH = path.join(__dirname, '..', 'downloads', 'hitomi');
@@ -52,7 +53,12 @@ app.get('/inquiry', async (req, res) => {
 });
 
 app.get('/get', async (req, res) => {
-    res.json(await hitomiCore.fetchData());
+    console.log(req.query);
+    const fetchedDataList = await hitomiCore.fetchData(req.query);
+    res.json({
+        list: fetchedDataList,
+        hasMore: fetchedDataList.length === FETCH_DATA_COUNT
+    });
 });
 
 app.get('/:galleryNumber/thumbnail', async (req, res) => {

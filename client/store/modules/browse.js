@@ -1,8 +1,17 @@
 import axios from "axios";
 
+/**
+ * @typedef {object} PaginationQuery
+ * @property {number} [page]
+ * @property {string} [type]
+ * @property {string} [language]
+ * @property {boolean} [initialize] setPage action 에서만 사용된다.
+ */
+
 const state = () => ({
     isLoading: true,
-    page: 1,
+    initialPage: 1,
+    pageOffset: 0,
     language: 'all',
     /**
      * @property type {string}
@@ -13,7 +22,9 @@ const state = () => ({
 });
 
 const getters = {
-    page: (state) => state.page,
+    isLoading: (state) => state.isLoading,
+    initialPage: (state) => state.initialPage,
+    page: (state) => state.initialPage + state.pageOffset,
     language: (state) => state.language,
     type: (state) => state.type,
     subdomain: (state) => (
@@ -23,20 +34,39 @@ const getters = {
 };
 
 const actions = {
-    async initDataList({ commit }) {
-        try {
-            const { data } = await axios.get('/get');
-            commit('setDataList', data);
-        } catch (e) {
-            alert('fetch failed');
-        }
+    async setPage({ commit, dispatch }, page = 1) {
+        await dispatch('getDataList', { page, initialize: true });
     },
-    async getDataList(state) {
+    async fetchNextPage({ commit, dispatch, getters }) {
+        await dispatch('getDataList', { page: getters.page });
+    },
+    /**
+     * @param state
+     * @namespace
+     * @param {object} state
+     * @param {PaginationQuery?} query
+     */
+    async getDataList({ commit }, query) {
         try {
-            const { data } = await axios.get('/get');
-            state.dataList = data;
+            const { page, initialize } = query;
+
+            commit('setLoading', true);
+            const { data } = await axios.get('/get', { params: query });
+            const { list } = data;
+
+            if (initialize) {
+                commit('resetDataList');
+                commit('setPage', page);
+            } else {
+                commit('increaseOffset');
+            }
+
+            commit('appendDataList', list);
         } catch (e) {
             alert('fetch failed');
+            throw e;
+        } finally {
+            commit('setLoading', false);
         }
     }
 };
@@ -45,9 +75,19 @@ const mutations = {
     setLoading(state, isLoading) {
         state.isLoading = isLoading;
     },
-    setDataList(state, dataList) {
-        state.dataList = dataList;
+    setPage(state, page) {
+        state.initialPage = page;
     },
+    increaseOffset(state) {
+        state.pageOffset = state.pageOffset + 1;
+    },
+    resetDataList(state) {
+        state.dataList = [];
+        state.pageOffset = 0;
+    },
+    appendDataList(state, newDataList) {
+        state.dataList = state.dataList.concat(newDataList);
+    }
 };
 
 export default {

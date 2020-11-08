@@ -1,49 +1,46 @@
 <template>
-  <v-layout>
-    <v-layout>
-      <v-row>
-        <v-col
-            sm="4"
-            md="4"
-        >
-          <v-text-field
-              v-model="galleryNumberValue"
-              color="success"
-              label="갤번입력"
-              :loading="isLoading"
-              :disabled="isLoading"
-          />
-        </v-col>
-        <v-col
-            sm="6"
-            md="4"
-        >
-          <div>
-            <v-btn elevation="2" @click="handleInquiryClicked" :disabled="isLoading">조회</v-btn>
-            <v-btn elevation="2" @click="handleDownloadClicked" :disabled="isLoading">다운로드</v-btn>
-          </div>
-        </v-col>
-      </v-row>
-    </v-layout>
-    <v-layout v-if="inquiryData">
-      <v-row>
-        <v-col cols="12">
-          조회결과
-        </v-col>
-        <v-col cols="12">
-          <HitomiDataCard :data="inquiryData"/>
-        </v-col>
-      </v-row>
-    </v-layout>
-  </v-layout>
+  <v-container>
+    <v-row>
+      <v-col
+          sm="4"
+          md="4"
+      >
+        <v-text-field
+            v-model="galleryNumberValue"
+            color="success"
+            label="갤번입력"
+            :loading="isLoading"
+            :disabled="isLoading"
+        />
+      </v-col>
+      <v-col
+          sm="6"
+          md="4"
+      >
+        <div>
+          <v-btn elevation="2" @click="handleInquiryClicked" :disabled="isLoading">조회</v-btn>
+          <v-btn elevation="2" @click="handleDownloadClicked" :disabled="isLoading">다운로드</v-btn>
+        </div>
+      </v-col>
+    </v-row>
+    <v-row v-if="inquiryData">
+      <v-col cols="12">
+        조회결과
+      </v-col>
+      <v-col cols="12">
+        <HitomiDataCard :data="inquiryData"/>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import HitomiDataCard from '../components/HitomiDataCard';
 import axios from 'axios';
+
 export default {
   name: 'SearchLayout',
-  components: {HitomiDataCard},
+  components: { HitomiDataCard },
   data: () => ({
     galleryNumberValue: 644511,
     isLoading: false,

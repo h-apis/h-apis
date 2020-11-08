@@ -6,7 +6,7 @@ import getImageUrlFromRaw from './functions/getImageUrlFromRaw';
 import downloadImage from './functions/downloadImage';
 import titleMapper from './mapper/titleMapper';
 import bypassAxios from '../../common/bypassAxios';
-import getListFromNozomi from './functions/getListFromNozomi';
+import getListFromNozomi, {HitomiFetchQuery} from './functions/getListFromNozomi';
 import getMetadataFromGallery from './functions/getMetadataFromGallery';
 
 /**
@@ -50,8 +50,8 @@ class HitomiCore {
     }
 
     // TODO 페이지, 언어 등 인자 입력 가능해야함. 쿼리로 받는 것이 좋을 듯.
-    async fetchData() {
-        const idListInPage = await getListFromNozomi();
+    async fetchData(query: HitomiFetchQuery) {
+        const idListInPage = await getListFromNozomi(query);
         return await Promise.all(idListInPage.map(async (id) => {
             let hitomiData;
             hitomiData = await this.dao.getOne({id});
