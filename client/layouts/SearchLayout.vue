@@ -50,7 +50,7 @@ export default {
     handleInquiryClicked: async function () {
       try {
         this.isLoading = true;
-        const { data } = await axios.get(`/inquiry?id=${this.galleryNumberValue}`);
+        const { data } = await axios.get(`/api/inquiry?id=${this.galleryNumberValue}`);
 
         if (!data) {
           alert('없는번호');
@@ -68,7 +68,7 @@ export default {
     handleDownloadClicked: async function () {
       try {
         this.isLoading = true;
-        await axios.get(`/download?id=${this.galleryNumberValue}`);
+        await axios.get(`/api/download?id=${this.galleryNumberValue}`);
         alert('downloaded');
       } catch (e) {
         console.error(e);

@@ -7,7 +7,7 @@ export type HitomiFetchQuery = Partial<{
     type: string;
 }>
 
-export default async function getListFromNozomi(query: HitomiFetchQuery) {
+export default async function getListFromNozomi(query: HitomiFetchQuery = {}) {
     const {page = 1, language = 'all'} = query;
 
     const startByte = (page - 1) * FETCH_DATA_COUNT * BYTE;

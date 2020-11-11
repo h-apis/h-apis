@@ -13,23 +13,15 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
-        <SearchLayout/>
-        <DataListLayout/>
-      </v-container>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import SearchLayout from './layouts/SearchLayout';
-import DataListLayout from './layouts/DataListLayout';
-
 export default {
-  components: { DataListLayout, SearchLayout },
   data: () => ({
-    drawer: null,
-    dataList: []
+    drawer: null
   })
 }
 </script>

@@ -90,6 +90,30 @@ class HitomiCore {
         }
     }
 
+    async getImage(id: number, index: number): Promise<ReadStream | undefined> {
+        const localItem = await this.dao.getOne({id});
+        let imageUrl;
+        if (localItem && localItem?.files?.[index]) {
+            imageUrl = getImageUrlFromRaw(id, localItem.files[index]);
+        } else {
+            const readerItem = await getMetadataFromReader(id);
+            await this.dao.upsert(readerItem);
+            if (readerItem.files[index]) {
+                imageUrl = getImageUrlFromRaw(id, readerItem.files[index]);
+            }
+        }
+
+        if (imageUrl) {
+            const {data} = await bypassAxios.get(imageUrl, {
+                responseType: 'stream',
+                headers: {
+                    referer: 'https://hitomi.la/'
+                }
+            });
+            return data;
+        }
+    }
+
     /**
      * 디렉토리 내에 있는 실제 작품들과 데이터베이스 내에 있는 리스트가 일치하는지 확인한다.
      * 데이터베이스에는 있지만 실제 작품이 삭제되거나 이동되어서 없는 경우는 데이터베이스에서 데이터를 삭제한다.

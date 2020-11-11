@@ -11,7 +11,7 @@
           size="150"
           tile
       >
-        <v-img :src="`/${data.id}/thumbnail`"></v-img>
+        <v-img :src="`/api/item/${data.id}/thumbnail`"></v-img>
       </v-avatar>
       <div>
         <v-card-title>

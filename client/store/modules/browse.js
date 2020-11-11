@@ -51,7 +51,7 @@ const actions = {
             const { page, initialize } = query;
 
             commit('setLoading', true);
-            const { data } = await axios.get('/get', { params: query });
+            const { data } = await axios.get('/api/list', { params: query });
             const { list } = data;
 
             if (initialize) {
