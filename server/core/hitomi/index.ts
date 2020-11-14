@@ -56,16 +56,22 @@ class HitomiCore {
             let hitomiData;
             hitomiData = await this.dao.getOne({id});
             if (!hitomiData) {
-                hitomiData = await this.inquiryDataFrom(id);
+                hitomiData = await this.getDataFromGallery(id);
             }
             return hitomiData;
         }));
     }
 
-    async inquiryDataFrom(id: number) {
+    async getDataFromGallery(id: number) {
         const hitomiData = await getMetadataFromGallery(id);
         await this.dao.upsert(hitomiData);
 
+        return hitomiData;
+    }
+
+    async getDataFromReader(id: number) {
+        const hitomiData = await getMetadataFromReader(id);
+        await this.dao.upsert(hitomiData);
         return hitomiData;
     }
 

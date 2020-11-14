@@ -39,7 +39,7 @@ router.get('/inquiry', async (req, res) => {
         if (!galleryNumber) {
             return res.status(400).send('parameter insufficient');
         }
-        res.json(await hitomiCore.inquiryDataFrom(galleryNumber));
+        res.json(await hitomiCore.getDataFromGallery(galleryNumber));
     } catch (e) {
         if (e?.response?.status) {
             const status = e.response.status;
@@ -52,6 +52,16 @@ router.get('/inquiry', async (req, res) => {
             console.error(e);
             res.sendStatus(500);
         }
+    }
+});
+
+router.get('/item/:galleryNumber', async (req, res) => {
+    const {galleryNumber} = req.params;
+    const id = parseInt(galleryNumber);
+    if (id) {
+        res.json(await hitomiCore.getDataFromReader(id));
+    } else {
+        res.sendStatus(400);
     }
 });
 
